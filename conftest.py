@@ -1,7 +1,4 @@
-import logging
-
 import pytest
-from swagger_coverage.src.coverage import SwaggerCoverage
 
 from common.api_builder import ApiBuilder
 
@@ -11,13 +8,10 @@ from fixtures.register.model import RegisterUser
 from fixtures.store.model import Store
 from fixtures.user_info.model import AddUserInfo
 
-logger = logging.getLogger("api")
-
 
 @pytest.fixture(scope="session")
 def app(request):
     url = request.config.getoption("--api-url")
-    logger.info(f"Start api tests, url is {url}")
     return StoreApp(url)
 
 
@@ -84,17 +78,6 @@ def pytest_addoption(parser):
         help="enter swagger url",
         default="https://api.swaggerhub.com/apis/berpress/flask-rest-api/1.0.0",
     ),
-
-
-@pytest.fixture(scope="session", autouse=True)
-def swagger_checker(request):
-    url = request.config.getoption("--swagger-url")
-    url_api = request.config.getoption("--api-url")
-    path = "/report"
-    swagger = SwaggerCoverage(api_url=url_api, url=url, path=path)
-    swagger.create_coverage_data()
-    yield
-    swagger.create_report()
 
 
 @pytest.fixture
